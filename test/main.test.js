@@ -1,23 +1,32 @@
 'use strict';
 
 const assert = require('assert');
-const objectToArguments = require('../');
+const { prepare, call } = require('../');
 
 const { tests } = getTestData();
 
 describe('objectToArguments', function() {
 	const testsKeys = Object.keys(tests);
+
 	testsKeys.forEach(key => {
-		it(`${key}`, function() {
+		it(`.prepare: ${key}`, function() {
 			const test = tests[key];
-			const result = test.fn(...objectToArguments(test.fn, test.input));
+			const result = test.fn(...prepare(test.fn, test.input));
+			assert.deepEqual(result, test.output);
+		});
+	});
+
+	testsKeys.forEach(key => {
+		it(`.call: ${key}`, function() {
+			const test = tests[key];
+			const result = call(test.fn, test.input);
 			assert.deepEqual(result, test.output);
 		});
 	});
 
 	it(`Must work with a function passed in as a string (e.g. fn.toString())`, function() {
 		const test = tests[testsKeys[0]];
-		const result = test.fn(...objectToArguments(test.fn.toString(), test.input));
+		const result = test.fn(...prepare(test.fn.toString(), test.input));
 		assert.deepEqual(result, test.output);
 	});
 });

@@ -17,7 +17,10 @@ npm install object-to-arguments -g
 
 ## Usage
 
-`objectToArguments(fn, object);`
+`objectToArguments.call(fn, object);`
+
+
+`objectToArguments.call(fn, object);`
 
  * **fn** must be a *function* reference or a function stringified (e.g. `fn.toString()`) for which the arguments array will be created for.
 

@@ -1,6 +1,6 @@
 {
   "name": "object-to-arguments",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Transforms object's properties into an array of arguments tailored for a specific function, respecting the expected order and handling destructuring and rest parameters when needed.",
   "main": "./lib/object-to-arguments.js",
   "bin": "./bin/cli.js",
