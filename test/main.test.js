@@ -33,6 +33,12 @@ describe('objectToArguments', function() {
 
 function getTestData() {
 
+	const fnWithoutParameters = function() {
+		return {
+			argumentsArray: Array.from(arguments)
+		};
+	};
+
 	const fnRest = function(a = 'dA', b, ...args) {
 		return { a, b, args};
 	};
@@ -62,7 +68,23 @@ function getTestData() {
 	};
 
 	const tests = {
-		'All expected arguments plus some extra ones':{
+		'Function defined without parameters with no arguments': {
+			fn: fnWithoutParameters,
+			input: {},
+			output: { argumentsArray: [] }
+		},
+
+		'Function defined without parameters with arbitrary arguments': {
+			fn: fnWithoutParameters,
+			input: {
+				extra1: 'EXTRA1',
+				b: 'argB',
+				extra2: 'EXTRA2'
+			},
+			output: { argumentsArray: ['EXTRA1', 'argB', 'EXTRA2'] }
+		},
+
+		'All expected arguments plus some extra ones': {
 			fn: fnWithComplexParams,
 			input: {
 				a: 'aA',
@@ -181,7 +203,7 @@ function getTestData() {
 			}
 		},
 
-		'Undefined argument (must preserve all default values)':{
+		'Undefined argument (must preserve all default values)': {
 			fn: fnWithComplexParams,
 			input: undefined,
 			output: {
@@ -207,7 +229,7 @@ function getTestData() {
 			}
 		},
 
-		'Undefined argument as a empty string (must preserve all default values)':{
+		'Undefined argument as a empty string (must preserve all default values)': {
 			fn: fnWithComplexParams,
 			input: '',
 			output: {
@@ -233,7 +255,7 @@ function getTestData() {
 			}
 		},
 
-		'Empty object as argument (must preserve all default values)':{
+		'Empty object as argument (must preserve all default values)': {
 			fn: fnWithComplexParams,
 			input: {},
 			output: {
@@ -259,7 +281,7 @@ function getTestData() {
 			}
 		},
 
-		'First expected argument only (must preserve all default values, excluding those belonging to the same structure expected for the first parameter)':{
+		'First expected argument only (must preserve all default values, excluding those belonging to the same structure expected for the first parameter)': {
 			fn: fnWithComplexParams,
 			input: {
 				a: 'aA'
@@ -285,8 +307,7 @@ function getTestData() {
 				x: 'dX',
 				argumentsArray: {
 					"0": [
-						"aA",
-						[
+						"aA", [
 							null, [
 								null,
 								null
@@ -305,7 +326,7 @@ function getTestData() {
 			}
 		},
 
-		'Rest parameter (must set the expected parameters passed in and leave the rest for the rest parameter)':{
+		'Rest parameter (must set the expected parameters passed in and leave the rest for the rest parameter)': {
 			fn: fnRest,
 			input: {
 				b: 'aB',
@@ -315,7 +336,7 @@ function getTestData() {
 			output: {
 				a: 'dA',
 				b: 'aB',
-				args: [ 'EXTRA1', 'EXTRA2' ]
+				args: ['EXTRA1', 'EXTRA2']
 			}
 		}
 	};
