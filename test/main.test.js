@@ -1,7 +1,7 @@
 'use strict';
 
 const assert = require('assert');
-const { prepare, call } = require('../');
+const { prepareArgs, prepareArgsAndCall } = require('../');
 
 const { tests } = getTestData();
 
@@ -9,24 +9,24 @@ describe('objectToArguments', function() {
 	const testsKeys = Object.keys(tests);
 
 	testsKeys.forEach(key => {
-		it(`.prepare: ${key}`, function() {
+		it(`.prepareArgs: ${key}`, function() {
 			const test = tests[key];
-			const result = test.fn(...prepare(test.fn, test.input));
+			const result = test.fn(...prepareArgs(test.fn, test.input));
 			assert.deepEqual(result, test.output);
 		});
 	});
 
 	testsKeys.forEach(key => {
-		it(`.call: ${key}`, function() {
+		it(`.prepareArgsAndCall: ${key}`, function() {
 			const test = tests[key];
-			const result = call(test.fn, test.input);
+			const result = prepareArgsAndCall(test.fn, test.input);
 			assert.deepEqual(result, test.output);
 		});
 	});
 
 	it(`Must work with a function passed in as a string (e.g. fn.toString())`, function() {
 		const test = tests[testsKeys[0]];
-		const result = test.fn(...prepare(test.fn.toString(), test.input));
+		const result = test.fn(...prepareArgs(test.fn.toString(), test.input));
 		assert.deepEqual(result, test.output);
 	});
 });
@@ -326,7 +326,22 @@ function getTestData() {
 			}
 		},
 
-		'Rest parameter (must set the expected parameters passed in and leave the rest for the rest parameter)': {
+		'Rest parameter must set the the arguments and passed in all the extra args': {
+			fn: fnRest,
+			input: {
+				b: 'aB',
+				extra1: 'EXTRA1',
+				args: ['restArgA', 'restArgB'],
+				extra2: 'EXTRA2'
+			},
+			output: {
+				a: 'dA',
+				b: 'aB',
+				args: ['restArgA', 'restArgB', 'EXTRA1', 'EXTRA2']
+			}
+		},
+
+		'Rest parameter must set the expected parameters passed in and leave the rest for the rest parameter': {
 			fn: fnRest,
 			input: {
 				b: 'aB',
