@@ -43,6 +43,10 @@ function getTestData() {
 		return { a, b, args};
 	};
 
+	const asyncFnRest = async function(a = 'dA', b, ...args) {
+		return { a, b, args};
+	};	
+
 	const fnWithComplexParams = function([a, [b = 'dB', [c, [d,e] = ['dD', 'dE'] ]]] = ['dA', ['dB', ['dC', ]]], {f} = {}, {g = 'dG'} = {}, {h: {i} = {}} = {},{j: {k = 'dK'} = {}} = {},{l: {m, n: {o} = {}} = {}} = {}, {p,q = 'dQ', r} = {}, [[[s,{t: {u} = {}} = {}]]] = [[[]]], {v: [{w} = {}, x = 'dX'] = []} = {}) {
 		return {
 			a,
@@ -66,6 +70,31 @@ function getTestData() {
 			argumentsArray: Array.from(arguments)
 		};
 	};
+
+
+	const asyncFnWithComplexParams = async function([a, [b = 'dB', [c, [d,e] = ['dD', 'dE'] ]]] = ['dA', ['dB', ['dC', ]]], {f} = {}, {g = 'dG'} = {}, {h: {i} = {}} = {},{j: {k = 'dK'} = {}} = {},{l: {m, n: {o} = {}} = {}} = {}, {p,q = 'dQ', r} = {}, [[[s,{t: {u} = {}} = {}]]] = [[[]]], {v: [{w} = {}, x = 'dX'] = []} = {}) {
+		return {
+			a,
+			b,
+			c,
+			d,
+			e,
+			f,
+			g,
+			i,
+			k,
+			m,
+			o,
+			p,
+			q,
+			r,
+			s,
+			u,
+			w,
+			x,
+			argumentsArray: Array.from(arguments)
+		};
+	};	
 
 	const tests = {
 		'Function defined without parameters with no arguments': {
@@ -201,6 +230,125 @@ function getTestData() {
 					"16": "EXTRA3"
 				}
 			}
+		},
+
+		'All expected arguments plus some extra ones': {
+			fn: asyncFnWithComplexParams,
+			input: {
+				a: 'aA',
+				b: 'aB',
+				c: 'aC',
+				d: 'aD',
+				e: 'aE',
+				f: 'aF',
+				g: 'aG',
+				h: 'aH',
+				i: 'aI',
+				j: 'aJ',
+				k: 'aK',
+				l: 'aL',
+				m: 'aM',
+				n: 'aN',
+				o: 'aO',
+				p: 'aP',
+				q: 'aQ',
+				r: 'aR',
+				s: 'aS',
+				u: 'aU',
+				v: 'aV',
+				w: 'aW',
+				x: 'aX',
+				extra1: 'EXTRA1',
+				extra2: 'EXTRA2',
+				extra3: 'EXTRA3'
+			},
+			output: Promise.resolve({
+				"a": "aA",
+				"b": "aB",
+				"c": "aC",
+				"d": "aD",
+				"e": "aE",
+				"f": "aF",
+				"g": "aG",
+				"i": "aI",
+				"k": "aK",
+				"m": "aM",
+				"o": "aO",
+				"p": "aP",
+				"q": "aQ",
+				"r": "aR",
+				"s": "aS",
+				"u": "aU",
+				"w": "aW",
+				"x": "aX",
+				"argumentsArray": {
+					"0": [
+						"aA", [
+							"aB", [
+								"aC", [
+									"aD",
+									"aE"
+								]
+							]
+						]
+					],
+					"1": {
+						"f": "aF"
+					},
+					"2": {
+						"g": "aG"
+					},
+					"3": {
+						"h": {
+							"i": "aI"
+						}
+					},
+					"4": {
+						"j": {
+							"k": "aK"
+						}
+					},
+					"5": {
+						"l": {
+							"m": "aM",
+							"n": {
+								"o": "aO"
+							}
+						}
+					},
+					"6": {
+						"p": "aP",
+						"q": "aQ",
+						"r": "aR"
+					},
+					"7": [
+						[
+							[
+								"aS", {
+									"t": {
+										"u": "aU"
+									}
+								}
+							]
+						]
+					],
+					"8": {
+						"v": [{
+								"w": "aW"
+							},
+							"aX"
+						]
+					},
+					"9": "aH",
+					"10": "aJ",
+					"11": "aL",
+					"12": "aN",
+					"13": "aV",
+					"14": "EXTRA1",
+					"15": "EXTRA2",
+					"16": "EXTRA3"
+				}
+			})
 		},
 
 		'Undefined argument (must preserve all default values)': {
@@ -341,6 +489,21 @@ function getTestData() {
 			}
 		},
 
+		'Async Rest parameter must set the the arguments and passed in all the extra args': {
+			fn: asyncFnRest,
+			input: {
+				b: 'aB',
+				extra1: 'EXTRA1',
+				args: ['restArgA', 'restArgB'],
+				extra2: 'EXTRA2'
+			},
+			output: Promise.resolve({
+				a: 'dA',
+				b: 'aB',
+				args: ['restArgA', 'restArgB', 'EXTRA1', 'EXTRA2']
+			})
+		},
+
 		'Rest parameter must set the expected parameters passed in and leave the rest for the rest parameter': {
 			fn: fnRest,
 			input: {
@@ -353,7 +516,22 @@ function getTestData() {
 				b: 'aB',
 				args: ['EXTRA1', 'EXTRA2']
 			}
+		},
+
+		'Async Rest parameter must set the expected parameters passed in and leave the rest for the rest parameter': {
+			fn: asyncFnRest,
+			input: {
+				b: 'aB',
+				extra1: 'EXTRA1',
+				extra2: 'EXTRA2'
+			},
+			output: Promise.resolve({
+				a: 'dA',
+				b: 'aB',
+				args: ['EXTRA1', 'EXTRA2']
+			})
 		}
+
 	};
 
 	return { tests };
